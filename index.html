@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Slot Machine - Christian John Tiongco</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Slot Machine</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+      <div class="offset-md-4 col-lg-4 text-center">
+        <h1 class="mt-5">Slot Machine</h1>
+        <p class="lead"></p>
+		
+        <ul class="list-inline text-center d-flex justify-content-center align-items-center" id="container-slot_machine">
+          <li class="list-inline-item"><img src="https://www.quackit.com/pix/samples/8s.jpg" class="rounded" alt="Sample image"></li>
+          <li class="list-inline-item"><img src="https://www.quackit.com/pix/samples/10s.jpg" class="rounded" alt="Sample image"></li>
+          <li class="list-inline-item"><img src="https://www.quackit.com/pix/samples/11s.jpg" class="rounded" alt="Sample image"></li>
+        </ul>
+		<button class="btn btn-block btn-success" id="btn-start">Start!</button>
+      </div>
+	  
+    </div>
+  </div>
+
+	<!-- Bootstrap core JavaScript -->
+	<script src="vendor/jquery/jquery.slim.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		let images = ['https://www.quackit.com/pix/samples/8s.jpg', 'https://www.quackit.com/pix/samples/10s.jpg', 'https://www.quackit.com/pix/samples/11s.jpg'];
+		
+		let slotMachine = 
+		{
+			rollLimit:{},
+			rollDelay:{},
+			start:function()
+			{
+				$('#container-slot_machine').find('img').each(function(i,e){
+					slotMachine.rollLimit[i] = getRandomNumber(10,100);
+					slotMachine.rollDelay[i] = getRandomNumber(50,300);
+					slotMachine.roll(i, this);
+				});
+				console.log(slotMachine);
+			},
+			roll:function(i, img)
+			{
+				let totalRollForImages = images.length-1;
+				slotMachine.slotTimer[i] = setInterval(function(){
+					if(slotMachine.rollLimit[i])
+					{
+						slotMachine.slotImageCount[i]++;
+						if(slotMachine.slotImageCount[i] > totalRollForImages)
+							slotMachine.slotImageCount[i] = 0;
+						img.src = images[slotMachine.slotImageCount[i]];
+						slotMachine.rollLimit[i]--;
+					}
+					else
+					{
+						slotMachine.end(slotMachine.slotTimer[i]);
+					}
+				}, slotMachine.rollDelay[i])
+				
+			},
+			slotTimer:{},
+			slotImageCount:{},
+			end:function(timer)
+			{
+				slotMachine.totalSlotStops++;
+				clearInterval(timer);
+				if(slotMachine.totalSlotStops == 3)
+				{
+					slotMachine.totalSlotStops = 0;
+					btn = $('#btn-start');
+					btn[0].disabled = false;
+					btn.removeClass('disabled');
+				}
+			},
+			totalSlotStops:0
+		}
+		
+		$(images).each(function(i){
+			slotMachine.slotImageCount[i] = 0;
+		});
+		
+		$(this).on('click', '#btn-start', function(){
+			$(this).addClass('disabled');
+			this.disabled = true;
+			slotMachine.start();
+		});
+		
+		function getRandomNumber(min, max)
+		{
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+	});
+	</script>
+</body>
+
+</html>
